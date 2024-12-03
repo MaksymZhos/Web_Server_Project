@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" defer src="https://cdn.jsdelivr.net/gh/imananoosheh/github-contributions-fetch@latest/github_calendar_widget.js"></script>
+    <script src="js/popup.js"></script>
+    <script src="js/oauth.js"></script>
+    <script src="js/edit.js"></script>
+</head>
+
+<body>
+    <div id="navBar">
+        <div><a href="#aboutMe">About Me</a></div>
+        <div><a href="#projects">Projects</a></div>
+        <div><a href="#githubContrib">Github Contributions</a></div>
+        <div><a href="#contact">Contact</a></div>
+        <div><button onclick="openLoginPopup()">Login</button></div>
+    </div>
+
+    <img src="https://i.imgur.com/0uMmOtD.png" alt='.' width=16 />
+
+    <div id="aboutMe">
+        <h2>About Me</h2>
+        
+        -<img src="https://i.imgur.com/0uMmOtD.png"> x <img src="https://i.imgur.com/2veJXnM.png" alt='.'
+        width=16 /> = <img src="https://i.imgur.com/gpJfOGE.jpeg" alt='.' width=32 /> <br />
+        
+        - 19 years
+        
+        - Student at <img src="https://imgur.com/oePcK6e" width='20' /> <br/>
+        
+        - I play Tps/Fps, Rhythm, Open-world anime RPGs
+
+    </div>
+
+    <div id="projects">
+        <h2>Projects</h2>
+        <p>Filler content</p>
+    </div>
+
+    <div id="githubContrib">
+        <h2>Github Contributions</h2>
+        <p>Filler content</p>
+        <div id="calendar-component" username="nbVenti"></div>
+    </div>
+
+    <div id="contact">
+        <h2>Contact</h2>
+        <p>Filler content</p>
+    </div>
+
+    <div id="loginPopup" class="popup">
+        <div class="popup-content">
+            <h2>Login</h2>
+            <button onclick="authenticateWithGoogle()">Login with Google</button>
+            <button onclick="closeLoginPopup()">Close</button>
+        </div>
+    </div>
+
+    <div id="editPopup" class="popup">
+        <div class="popup-content">
+            <h2>Edit Portfolio</h2>
+            <form id="editForm">
+                <label for="editSection">Section to Edit:</label>
+                <select id="editSection">
+                    <option value="aboutMe">About Me</option>
+                    <option value="projects">Projects</option>
+                    <option value="contact">Contact</option>
+                </select>
+                <textarea id="editContent" rows="5"></textarea>
+                <button type="submit">Save Changes</button>
+            </form>
+            <button onclick="closeEditPopup()">Close</button>
+        </div>
+    </div>
+
+    
+</body>
+
+</html>
