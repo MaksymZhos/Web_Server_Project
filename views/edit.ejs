@@ -63,44 +63,50 @@
 
                 <button type="submit">Save Changes</button>
             </form>
+
+            <!-- Display the direct link to the profile -->
+            <section>
+                <h2>Direct Profile Link</h2>
+                <input type="text" value="http://localhost:3000/<%= user.name %>" readonly>
+
+            </section>
         </div>
     </div>
 
     <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // Attach delete event listeners to all delete buttons (including dynamically added ones)
-    const deleteButtons = document.querySelectorAll('.delete-project');
-    deleteButtons.forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            const projectDiv = event.target.closest('.project-input');
-            projectDiv.remove();
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attach delete event listeners to all delete buttons (including dynamically added ones)
+            const deleteButtons = document.querySelectorAll('.delete-project');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    const projectDiv = event.target.closest('.project-input');
+                    projectDiv.remove();
+                });
+            });
+
+            // Add project dynamically
+            document.getElementById('add-project').addEventListener('click', function() {
+                const container = document.getElementById('projects-container');
+                const projectIndex = container.querySelectorAll('.project-input').length;
+
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'project-input';
+                projectDiv.innerHTML = `
+                    <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
+                    <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
+                    <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
+                    <button type="button" class="delete-project">Delete</button>
+                `;
+                container.insertBefore(projectDiv, this);
+
+                // Add event listener to the new delete button
+                projectDiv.querySelector('.delete-project').addEventListener('click', function() {
+                    container.removeChild(projectDiv);
+                });
+            });
         });
-    });
-
-    // Add project dynamically
-    document.getElementById('add-project').addEventListener('click', function() {
-        const container = document.getElementById('projects-container');
-        const projectIndex = container.querySelectorAll('.project-input').length;
-
-        const projectDiv = document.createElement('div');
-        projectDiv.className = 'project-input';
-        projectDiv.innerHTML = `
-            <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
-            <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
-            <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
-            <button type="button" class="delete-project">Delete</button>
-        `;
-        container.insertBefore(projectDiv, this);
-
-        // Add event listener to the new delete button
-        projectDiv.querySelector('.delete-project').addEventListener('click', function() {
-            container.removeChild(projectDiv);
-        });
-    });
-});
-
-
-
 
         // Log form data before submission
         document.querySelector('form').addEventListener('submit', function(event) {

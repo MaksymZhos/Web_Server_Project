@@ -1,23 +1,21 @@
 require('dotenv').config(); // Load environment variables from .env
-
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require('path');
+const fs = require('fs'); // For reading/writing JSON files
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// In-memory user storage
-const users = {};
+// File path for storing users
+const usersFilePath = path.join(__dirname, 'users.json');
 
 // Middleware setup
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 console.log(path.join(__dirname, 'public'));  // Log the path to the public directory
-
-
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -46,8 +44,11 @@ passport.use(
             callbackURL: "/auth/google/callback",
         },
         (accessToken, refreshToken, profile, done) => {
-            // Check if the user exists; if not, create a new entry
+            // Read the users data from the file
+            const users = readUsersFromFile();
+
             if (!users[profile.id]) {
+                // Add a new user
                 users[profile.id] = {
                     id: profile.id,
                     name: profile.displayName,
@@ -57,6 +58,8 @@ passport.use(
                     projects: [],
                     contact: {},
                 };
+                // Save the updated users back to the file
+                saveUsersToFile(users);
             }
             return done(null, users[profile.id]);
         }
@@ -69,6 +72,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
+    const users = readUsersFromFile();
     done(null, users[id]);
 });
 
@@ -78,6 +82,26 @@ function ensureAuthenticated(req, res, next) {
         return next();
     }
     res.redirect('/login');
+}
+
+// Read users from the JSON file
+function readUsersFromFile() {
+    try {
+        const data = fs.readFileSync(usersFilePath, 'utf8');
+        return JSON.parse(data); // Parse the JSON string into an object
+    } catch (error) {
+        console.error('Error reading users file:', error);
+        return {}; // Return an empty object if the file doesn't exist or is empty
+    }
+}
+
+// Save users to the JSON file
+function saveUsersToFile(users) {
+    try {
+        fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf8');
+    } catch (error) {
+        console.error('Error writing to users file:', error);
+    }
 }
 
 // Routes
@@ -125,14 +149,16 @@ app.get('/edit', ensureAuthenticated, (req, res) => {
     });
 });
 
+// Profile save
 app.post('/edit', ensureAuthenticated, (req, res) => {
     console.log('Received form data:', req.body);
 
     const { about, projects, contactEmail, contactGithub, contactLinkedin } = req.body;
 
     // Log the received projects to verify the structure
-    console.log('Projects received:', projects);  // Should log an array of project objects
+    console.log('Projects received:', projects);
 
+    const users = readUsersFromFile();
     const user = users[req.user.id];
 
     // Update user profile
@@ -142,7 +168,7 @@ app.post('/edit', ensureAuthenticated, (req, res) => {
     if (projects && Array.isArray(projects)) {
         user.projects = projects;
     } else {
-        user.projects = [];  // Clear projects if not provided
+        user.projects = [];
     }
 
     // Update contact information
@@ -152,14 +178,28 @@ app.post('/edit', ensureAuthenticated, (req, res) => {
         linkedin: contactLinkedin,
     };
 
-    // Log the updated user data
-    console.log('Updated user data:', user);
+    // Save updated users to the JSON file
+    saveUsersToFile(users);
 
     res.redirect('/');  // Redirect after saving
 });
 
+// View User Profile
+app.get('/:username', (req, res) => {
+    const username = req.params.username;
+    const users = readUsersFromFile();
 
+    const user = Object.values(users).find(user => user.name.toLowerCase() === username.toLowerCase());
 
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    res.render('portfolio', {
+        user: user,
+        isAuthenticated: req.isAuthenticated(),
+    });
+});
 
 // Start the server
 app.listen(PORT, () => {

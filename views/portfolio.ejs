@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= user ? user.name + "'s Portfolio" : "Portfolio" %></title>
+    <link rel="stylesheet" href="/style.css">
+    <!-- GitHub Calendar Stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <div>
+                <a href="/">Portfolio</a>
+            </div>
+            <div>
+                <% if (isAuthenticated) { %>
+                    <a href="/edit">Edit Profile</a>
+                    <a href="/logout">Logout</a>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <% if (user) { %>
+            <section id="about">
+                <h1><%= user.name %></h1>
+                <p><%= user.about || 'No about information' %></p>
+            </section>
+
+            <% if (user.contact && user.contact.github) { %>
+            <section id="github-contributions">
+                <h2>GitHub Contributions</h2>
+                <div class="github-calendar"></div>
+            </section>
+            <% } %>
+
+            <section id="projects">
+                <h2>Projects</h2>
+                <% if (user.projects && user.projects.length > 0) { %>
+                    <% user.projects.forEach(project => { %>
+                        <div class="project">
+                            <h3><%= project.title %></h3>
+                            <p><%= project.description %></p>
+                            <% if (project.link) { %>
+                                <a href="<%= project.link %>" target="_blank">View Project</a>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>No projects added yet.</p>
+                <% } %>
+            </section>
+
+            <section id="contact">
+                <h2>Contact</h2>
+                <% if (user.contact) { %>
+                    <% if (user.contact.email) { %>
+                        <p>Email: <a href="mailto:<%= user.contact.email %>"><%= user.contact.email %></a></p>
+                    <% } %>
+                    <% if (user.contact.github) { %>
+                        <p>GitHub: <a href="https://github.com/<%= user.contact.github %>" target="_blank"><%= user.contact.github %></a></p>
+                    <% } %>
+                    <% if (user.contact.linkedin) { %>
+                        <p>LinkedIn: <a href="<%= user.contact.linkedin %>" target="_blank">LinkedIn Profile</a></p>
+                    <% } %>
+                <% } %>
+            </section>
+        <% } else { %>
+            <p>Please log in to view profile</p>
+        <% } %>
+    </div>
+
+    <script src="https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js"></script>
+    <script>
+        <% if (user && user.contact && user.contact.github) { %>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                GitHubCalendar(".github-calendar", "<%= user.contact.github %>", {
+                    responsive: true,
+                    global_stats: true
+                });
+            } catch (error) {
+                console.error('Failed to load GitHub Calendar:', error);
+                document.querySelector('.github-calendar').innerHTML = 'Unable to load GitHub contributions';
+            }
+        });
+        <% } %>
+    </script>
+</body>
+</html>
