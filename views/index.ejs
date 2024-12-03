@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= user ? user.name + "'s Portfolio" : "Portfolio" %></title>
     <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/github-contributions-widget@0.0.4/dist/gh-contributions-widget.min.js"></script>
+    <!-- GitHub Calendar Stylesheet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css"
+    />
 </head>
 <body>
     <header>
@@ -30,10 +35,14 @@
                 <p><%= user.about || 'No about information' %></p>
             </section>
 
+            <% if (user.contact && user.contact.github) { %>
             <section id="github-contributions">
                 <h2>GitHub Contributions</h2>
-                <div id="github-calendar"></div>
+                <div class="github-calendar">
+                    <!-- GitHub calendar will be loaded here -->
+                </div>
             </section>
+            <% } %>
 
             <section id="projects">
                 <h2>Projects</h2>
@@ -71,14 +80,20 @@
         <% } %>
     </div>
 
+    <!-- GitHub Calendar Scripts -->
+    <script src="https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js"></script>
     <script>
         <% if (user && user.contact && user.contact.github) { %>
         document.addEventListener('DOMContentLoaded', function() {
-            GitHubCalendar("#github-calendar", "<%= user.contact.github %>", {
-                responsive: true,
-                global_stats: true,
-                cache: 86400
-            });
+            try {
+                GitHubCalendar(".github-calendar", "<%= user.contact.github %>", {
+                    responsive: true,
+                    global_stats: true
+                });
+            } catch (error) {
+                console.error('Failed to load GitHub Calendar:', error);
+                document.querySelector('.github-calendar').innerHTML = 'Unable to load GitHub contributions';
+            }
         });
         <% } %>
     </script>
