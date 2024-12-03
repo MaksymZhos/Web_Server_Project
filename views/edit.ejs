@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="edit-container">
+        <h1>Edit Profile</h1>
+        <form action="/edit" method="POST">
+            <section>
+                <h2>About</h2>
+                <textarea name="about" rows="4"><%= user.about || '' %></textarea>
+            </section>
+
+            <section>
+                <h2>Projects</h2>
+                <div id="projects-container">
+                    <% if (user.projects && user.projects.length > 0) { %>
+                        <% user.projects.forEach((project, index) => { %>
+                            <div class="project-input">
+                                <input type="text" name="projects[<%= index %>][title]"
+                                       placeholder="Project Title"
+                                       value="<%= project.title || '' %>">
+                                <textarea name="projects[<%= index %>][description]"
+                                          placeholder="Project Description"><%= project.description || '' %></textarea>
+                                <input type="text" name="projects[<%= index %>][link]"
+                                       placeholder="Project Link"
+                                       value="<%= project.link || '' %>">
+                            </div>
+                        <% }); %>
+                    <% } %>
+                    <button type="button" id="add-project">Add Project</button>
+                </div>
+            </section>
+
+            <section>
+                <h2>Contact Information</h2>
+                <input type="email" name="contactEmail"
+                       placeholder="Email"
+                       value="<%= user.contact?.email || '' %>">
+                <input type="text" name="contactGithub"
+                       placeholder="GitHub Username"
+                       value="<%= user.contact?.github || '' %>">
+                <input type="text" name="contactLinkedin"
+                       placeholder="LinkedIn URL"
+                       value="<%= user.contact?.linkedin || '' %>">
+            </section>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-project').addEventListener('click', function() {
+            const container = document.getElementById('projects-container');
+            const projectIndex = container.querySelectorAll('.project-input').length;
+
+            const projectDiv = document.createElement('div');
+            projectDiv.className = 'project-input';
+            projectDiv.innerHTML = `
+                <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
+                <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
+                <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link">
+            `;
+
+            container.insertBefore(projectDiv, this);
+        });
+    </script>
+</body>
+</html>

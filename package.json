@@ -1,0 +1,22 @@
+{
+  "name": "portfolio-webapp",
+  "version": "1.0.0",
+  "description": "Personal Portfolio Web Application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.6",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "session": "^0.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
