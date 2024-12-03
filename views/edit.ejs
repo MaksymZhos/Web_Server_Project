@@ -40,6 +40,7 @@
                                     <input type="text" name="projects[<%= index %>][link]"
                                            placeholder="Project Link (https://github.com/username/repo)"
                                            value="<%= project.link || '' %>">
+                                    <button type="button" class="delete-project" data-index="${projectIndex}">Delete</button>
                                 </div>
                             <% }); %>
                         <% } %>
@@ -66,26 +67,39 @@
     </div>
 
     <script>
-        // Add project dynamically when button is clicked
-        document.getElementById('add-project').addEventListener('click', function() {
-    const container = document.getElementById('projects-container');
-    const projectIndex = container.querySelectorAll('.project-input').length;
+   document.addEventListener('DOMContentLoaded', function() {
+    // Attach delete event listeners to all delete buttons (including dynamically added ones)
+    const deleteButtons = document.querySelectorAll('.delete-project');
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            const projectDiv = event.target.closest('.project-input');
+            projectDiv.remove();
+        });
+    });
 
-    const projectDiv = document.createElement('div');
-    projectDiv.className = 'project-input';
-    projectDiv.innerHTML = `
-        <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
-        <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
-        <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
-        <button type="button" class="delete-project" data-index="${projectIndex}">Delete</button>
-    `;
-    container.insertBefore(projectDiv, this);
+    // Add project dynamically
+    document.getElementById('add-project').addEventListener('click', function() {
+        const container = document.getElementById('projects-container');
+        const projectIndex = container.querySelectorAll('.project-input').length;
 
-    // Add event listener to the delete button
-    projectDiv.querySelector('.delete-project').addEventListener('click', function() {
-        container.removeChild(projectDiv);
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'project-input';
+        projectDiv.innerHTML = `
+            <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
+            <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
+            <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
+            <button type="button" class="delete-project">Delete</button>
+        `;
+        container.insertBefore(projectDiv, this);
+
+        // Add event listener to the new delete button
+        projectDiv.querySelector('.delete-project').addEventListener('click', function() {
+            container.removeChild(projectDiv);
+        });
     });
 });
+
+
 
 
         // Log form data before submission

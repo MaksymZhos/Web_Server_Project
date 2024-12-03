@@ -67,6 +67,22 @@ header nav a {
 form section {
     margin-bottom: 16px;
 }
+/* Style for the delete button */
+.delete-project {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.delete-project:hover {
+    background-color: darkred;
+}
+
 
 form input,
     form textarea {
