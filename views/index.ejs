@@ -2,26 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="/styles.css">
+    <title><%= user ? user.name + "'s Portfolio" : "Portfolio" %></title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/github-contributions-widget@0.0.4/dist/gh-contributions-widget.min.js"></script>
 </head>
 <body>
     <header>
         <nav>
-            <% if (isAuthenticated) { %>
-                <a href="/edit">Edit Profile</a>
-                <a href="/logout">Logout</a>
-            <% } else { %>
-                <a href="/login">Login</a>
-            <% } %>
+            <div>
+                <a href="/">Portfolio</a>
+            </div>
+            <div>
+                <% if (isAuthenticated) { %>
+                    <a href="/edit">Edit Profile</a>
+                    <a href="/logout">Logout</a>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                <% } %>
+            </div>
         </nav>
     </header>
 
-    <main>
+    <div class="container">
         <% if (user) { %>
             <section id="about">
                 <h1><%= user.name %></h1>
                 <p><%= user.about || 'No about information' %></p>
+            </section>
+
+            <section id="github-contributions">
+                <h2>GitHub Contributions</h2>
+                <div id="github-calendar"></div>
             </section>
 
             <section id="projects">
@@ -32,7 +43,7 @@
                             <h3><%= project.title %></h3>
                             <p><%= project.description %></p>
                             <% if (project.link) { %>
-                                <a href="<%= project.link %>">View Project</a>
+                                <a href="<%= project.link %>" target="_blank">View Project</a>
                             <% } %>
                         </div>
                     <% }); %>
@@ -44,14 +55,32 @@
             <section id="contact">
                 <h2>Contact</h2>
                 <% if (user.contact) { %>
-                    <p>Email: <%= user.contact.email || 'N/A' %></p>
-                    <p>GitHub: <%= user.contact.github || 'N/A' %></p>
-                    <p>LinkedIn: <%= user.contact.linkedin || 'N/A' %></p>
+                    <% if (user.contact.email) { %>
+                        <p>Email: <a href="mailto:<%= user.contact.email %>"><%= user.contact.email %></a></p>
+                    <% } %>
+                    <% if (user.contact.github) { %>
+                        <p>GitHub: <a href="https://github.com/<%= user.contact.github %>" target="_blank"><%= user.contact.github %></a></p>
+                    <% } %>
+                    <% if (user.contact.linkedin) { %>
+                        <p>LinkedIn: <a href="<%= user.contact.linkedin %>" target="_blank">LinkedIn Profile</a></p>
+                    <% } %>
                 <% } %>
             </section>
         <% } else { %>
             <p>Please log in to view profile</p>
         <% } %>
-    </main>
+    </div>
+
+    <script>
+        <% if (user && user.contact && user.contact.github) { %>
+        document.addEventListener('DOMContentLoaded', function() {
+            GitHubCalendar("#github-calendar", "<%= user.contact.github %>", {
+                responsive: true,
+                global_stats: true,
+                cache: 86400
+            });
+        });
+        <% } %>
+    </script>
 </body>
 </html>

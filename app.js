@@ -13,8 +13,12 @@ const PORT = process.env.PORT || 3000;
 const users = {};
 
 // Middleware setup
-app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+console.log(path.join(__dirname, 'public'));  // Log the path to the public directory
+
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
