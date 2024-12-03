@@ -126,21 +126,23 @@ app.get('/edit', ensureAuthenticated, (req, res) => {
 });
 
 app.post('/edit', ensureAuthenticated, (req, res) => {
+    console.log('Received form data:', req.body);
+
     const { about, projects, contactEmail, contactGithub, contactLinkedin } = req.body;
 
-    // Update user profile
+    // Log the received projects to verify the structure
+    console.log('Projects received:', projects);  // Should log an array of project objects
+
     const user = users[req.user.id];
+
+    // Update user profile
     user.about = about;
 
-    // Parse and update projects
-    user.projects = [];
-    if (typeof projects === 'string') {
-        try {
-            const parsedProjects = JSON.parse(projects);
-            user.projects = parsedProjects;
-        } catch (error) {
-            console.error('Error parsing projects:', error);
-        }
+    // Ensure the 'projects' field exists and is an array
+    if (projects && Array.isArray(projects)) {
+        user.projects = projects;
+    } else {
+        user.projects = [];  // Clear projects if not provided
     }
 
     // Update contact information
@@ -150,8 +152,14 @@ app.post('/edit', ensureAuthenticated, (req, res) => {
         linkedin: contactLinkedin,
     };
 
-    res.redirect('/');
+    // Log the updated user data
+    console.log('Updated user data:', user);
+
+    res.redirect('/');  // Redirect after saving
 });
+
+
+
 
 // Start the server
 app.listen(PORT, () => {

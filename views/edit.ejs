@@ -66,19 +66,60 @@
     </div>
 
     <script>
+        // Add project dynamically when button is clicked
         document.getElementById('add-project').addEventListener('click', function() {
-            const container = document.getElementById('projects-container');
-            const projectIndex = container.querySelectorAll('.project-input').length;
+    const container = document.getElementById('projects-container');
+    const projectIndex = container.querySelectorAll('.project-input').length;
 
-            const projectDiv = document.createElement('div');
-            projectDiv.className = 'project-input';
-            projectDiv.innerHTML = `
-                <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
-                <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
-                <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
-            `;
+    const projectDiv = document.createElement('div');
+    projectDiv.className = 'project-input';
+    projectDiv.innerHTML = `
+        <input type="text" name="projects[${projectIndex}][title]" placeholder="Project Title">
+        <textarea name="projects[${projectIndex}][description]" placeholder="Project Description"></textarea>
+        <input type="text" name="projects[${projectIndex}][link]" placeholder="Project Link (https://github.com/username/repo)">
+        <button type="button" class="delete-project" data-index="${projectIndex}">Delete</button>
+    `;
+    container.insertBefore(projectDiv, this);
 
-            container.insertBefore(projectDiv, this);
+    // Add event listener to the delete button
+    projectDiv.querySelector('.delete-project').addEventListener('click', function() {
+        container.removeChild(projectDiv);
+    });
+});
+
+
+        // Log form data before submission
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the form from submitting
+
+            const formData = new FormData(this);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                // Handle 'projects' array fields
+                if (key.startsWith('projects')) {
+                    const projectMatch = key.match(/projects\[(\d+)]\[(\w+)]/);
+                    if (projectMatch) {
+                        const index = projectMatch[1];
+                        const field = projectMatch[2];
+                        if (!data.projects) {
+                            data.projects = [];
+                        }
+                        if (!data.projects[index]) {
+                            data.projects[index] = {};
+                        }
+                        data.projects[index][field] = value;
+                    }
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            // Log the collected form data
+            console.log('Form data before submission:', data);
+
+            // If everything looks correct, submit the form
+            this.submit();
         });
     </script>
 </body>
